@@ -1,8 +1,10 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import {useRef} from "react";
+import { useRef, useState } from "react";
 
 export default function Home() {
+  const [feebbackItems, setFeedbackItems] = useState([]);
+
   const emailInputRef = useRef();
   const feedbackInputRef = useRef();
 
@@ -11,21 +13,26 @@ export default function Home() {
 
     const email = emailInputRef.current.value;
     const feedback = feedbackInputRef.current.value;
-    
 
     // {email: "", text: ""}
-    const reqBody = {email: email, text: feedback};
+    const reqBody = { email: email, text: feedback };
 
-
-    fetch('/api/feedback', {
-      method: 'POST',
+    fetch("/api/feedback", {
+      method: "POST",
       body: JSON.stringify(reqBody),
       headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then((response) => response.json())
-    .then((data) => console.log(data));
-  }
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  };
+
+  const loadFeedback = () => {
+    fetch("/api/feedback")
+      .then((response) => response.json())
+      .then((data) => setFeedbackItems(data.feedback));
+  };
 
   return (
     <div>
@@ -41,6 +48,12 @@ export default function Home() {
         </div>
         <button type="submit">Send Feedback</button>
       </form>
+      <button onClick={loadFeedback}>Load Feedback</button>
+      <ul>
+        {feebbackItems.map((item) => (
+          <li key={item.id}>{item.text}</li>
+        ))}
+      </ul>
     </div>
   );
 }

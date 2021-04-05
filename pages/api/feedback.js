@@ -27,7 +27,11 @@ const handler = (req, res) => {
         res.status(201).json({message: 'Feedback Saved Correctly', feedback: newFeedback})
 
     } else {
-        res.status(200).json({message: 'Was not a post'});
+        const filePath = path.join(process.cwd(), 'data', 'feedback.json');
+        const fileData = fs.readFileSync(filePath);
+        
+        const data = JSON.parse(fileData);
+        res.status(200).json({message: 'Was not a post', feedback: data});
     }
 }
 
